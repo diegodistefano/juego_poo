@@ -3,6 +3,10 @@ class Game {
     this.container = document.getElementById("game-container");
     this.puntosElement = document.getElementById("puntos");
     this.reiniciar = document.getElementById("boton-reinicio");
+    this.btnIzquierda = document.getElementById("boton-izquierda");
+    this.btnArriba = document.getElementById("boton-arriba");
+    this.btnDerecha = document.getElementById("boton-derecha");
+
     this.personaje = null;
     this.monedas = [];
     this.skulls = [];
@@ -10,26 +14,23 @@ class Game {
 
     this.crearEscenario();
     this.agregarEventos();
-    this.reiniciarJuego();
+    // this.reiniciarJuego();
   }
 
   crearEscenario() {
-    if (this.personaje !== null) {
-      this.container.removeChild(this.personaje.element);
-    } else {
-    this.personaje = new Personaje();
-    this.container.appendChild(this.personaje.element);
-
-    for (let i = 0; i < 5; i++) {
-      const moneda = new Moneda();
-      this.monedas.push(moneda);
-      this.container.appendChild(moneda.element);
-      const skull = new Skull();
-      this.skulls.push(skull);
-      this.container.appendChild(skull.element);
+      this.personaje = new Personaje();
+      this.container.appendChild(this.personaje.element);
+      
+      for (let i = 0; i < 5; i++) {
+        const moneda = new Moneda();
+        this.monedas.push(moneda);
+        this.container.appendChild(moneda.element);
+        const skull = new Skull();
+        this.skulls.push(skull);
+        this.container.appendChild(skull.element);
     }
   }
-  }
+  
 
   agregarEventos() {
     window.addEventListener("keydown", (evento) => {
@@ -41,6 +42,15 @@ class Game {
       }
       this.personaje.mover(evento);
       this.checkColisiones();
+    })
+    this.btnIzquierda.addEventListener("click", (evento) => {
+      this.personaje.mover({ key: "ArrowLeft" });
+    })
+    this.btnArriba.addEventListener("click", (evento) => {
+      this.personaje.saltar(evento);
+    })
+    this.btnDerecha.addEventListener("click", (evento) => {
+      this.personaje.mover({ key: "ArrowRight" });
     })
   }
 
@@ -71,7 +81,7 @@ class Game {
   reiniciarJuego() {
     this.reiniciar.addEventListener("click", () => {
       this.reiniciarJuego();
-      }, {once: true});
+      });
     this.crearEscenario();
   }
 }
