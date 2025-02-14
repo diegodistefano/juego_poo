@@ -30,7 +30,6 @@ class Game {
         this.container.appendChild(skull.element);
     }
   }
-  
 
   agregarEventos() {
     window.addEventListener("keydown", (evento) => {
@@ -43,13 +42,13 @@ class Game {
       this.personaje.mover(evento);
       this.checkColisiones();
     })
-    this.btnIzquierda.addEventListener("click", (evento) => {
+    this.btnIzquierda.addEventListener("click", () => {
       this.personaje.mover({ key: "ArrowLeft" });
     })
     this.btnArriba.addEventListener("click", (evento) => {
       this.personaje.saltar(evento);
     })
-    this.btnDerecha.addEventListener("click", (evento) => {
+    this.btnDerecha.addEventListener("click", () => {
       this.personaje.mover({ key: "ArrowRight" });
     })
   }
