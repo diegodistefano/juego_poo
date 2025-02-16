@@ -51,14 +51,27 @@ body {
   }
 
   .personaje {
-    background: url('./public/img/personaje.png');
+    background: url('./public/img/luffyPunching.png');
     background-size: cover;
     position: absolute;
-    width: 50px;
-    height: 50px;
-    /* background-color: #07a07c;
-    border-radius: 50%;
-    border: 5px solid #07a050; */
+    width: 80px;
+    height: 80px;
+  }
+
+  .personajeGolpeando {
+    background: url('./public/img/luffyPunching.png');
+    background-size: cover;
+    position: absolute;
+    width: 80px;
+    height: 80px;
+  }
+
+  .golpe {
+    background: url('./public/img/Punch.png');
+    background-size:cover;
+    position: absolute;
+    width: 30px;
+    height: 80px;
   }
   
   .moneda {
@@ -67,9 +80,7 @@ body {
     position: absolute;
     width: 30px;
     height: 30px;
-    /* background-color: gold;
-    border-radius: 50%;
-    box-shadow: 0 0 10px 2px rgba(255, 223, 0, 0.8); */
+ 
   }
 
   .skull {
@@ -101,17 +112,7 @@ body {
     #botones {
       display: none;
     }
-    
-    .personaje {
-      background: url('./public/img/personaje.png');
-      background-size: cover;
-      position: absolute;
-      width: 50px;
-      height: 50px;
-      /* background-color: #07a07c;
-      border-radius: 50%;
-      border: 5px solid #07a050; */
-    }
+
     
     .moneda {
       background: url('./public/img/moneda.png');

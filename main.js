@@ -7,10 +7,14 @@ class Game {
     this.btnArriba = document.getElementById("boton-arriba");
     this.btnDerecha = document.getElementById("boton-derecha");
 
+
     this.personaje = null;
+    this.personajeGolpeado = null;
+    this.golpe = null;
     this.monedas = [];
     this.skulls = [];
     this.puntuacion = 0;
+    this.sonido = new Audio("./public/sound/punch-sound.mp3");
 
     this.crearEscenario();
     this.agregarEventos();
@@ -18,52 +22,65 @@ class Game {
   }
 
   crearEscenario() {
-      this.personaje = new Personaje();
-      this.container.appendChild(this.personaje.element);
-      
-      for (let i = 0; i < 5; i++) {
-        const moneda = new Moneda();
-        this.monedas.push(moneda);
-        this.container.appendChild(moneda.element);
-        const skull = new Skull();
-        this.skulls.push(skull);
-        this.container.appendChild(skull.element);
+    this.personaje = new Personaje();
+    this.container.appendChild(this.personaje.element);
+    this.golpe = new Golpe();
+    this.container.appendChild(this.golpe.element);
+
+    for (let i = 0; i < 5; i++) {
+      const moneda = new Moneda();
+      this.monedas.push(moneda);
+      this.container.appendChild(moneda.element);
+      const skull = new Skull();
+      this.skulls.push(skull);
+      this.container.appendChild(skull.element);
     }
   }
 
   agregarEventos() {
     window.addEventListener("keydown", (evento) => {
       if (((evento.key === "ArrowUp") && this.personaje.y === 0)) {
-        this.personaje.caer(evento);
+        // this.personaje.caer(evento);
+        this.golpe.caer(evento);
         if (window.addEventListener("keyup", (evento))) {
-          this.personaje.caer(evento);
+          // this.personaje.caer(evento);
+          this.golpe.caer(evento);
         }
       }
       this.personaje.mover(evento);
+      this.golpe.mover(evento);
       this.checkColisiones();
     })
     this.btnIzquierda.addEventListener("click", () => {
       this.personaje.mover({ key: "ArrowLeft" });
+      this.golpe.mover({ key: "ArrowLeft" });
     })
-    this.btnArriba.addEventListener("click", (evento) => {
-      this.personaje.saltar(evento);
+    this.btnArriba.addEventListener("click", () => {
+      // this.personaje.mover({ key: "ArrowUp" });
+      this.golpe.mover({ key: "ArrowUp" });
     })
     this.btnDerecha.addEventListener("click", () => {
       this.personaje.mover({ key: "ArrowRight" });
+      this.golpe.mover({ key: "ArrowRight" });
     })
   }
 
   checkColisiones() {
     setInterval(() => {
       this.monedas.forEach((moneda, index) => {
-        if (this.personaje.colisionaCon(moneda)) {
-          this.container.removeChild(moneda.element);
-          this.monedas.splice(index, 1);
-          this.actualizarPuntuacion(10);
+        if (this.golpe.colisionaCon(moneda)) {
+          //efecto de salir de la pantalla
+          moneda.salirPantalla(() => {
+            this.container.removeChild(moneda.element);
+            this.monedas.splice(index, 1);
+            this.actualizarPuntuacion(10);
+            this.sonido.play();
+          });
+
         }
       });
       this.skulls.forEach((skull, index) => {
-        if (this.personaje.colisionaCon(skull)) {
+        if (this.golpe.colisionaCon(skull)) {
           this.container.removeChild(skull.element);
           this.skulls.splice(index, 1);
           this.actualizarPuntuacion(-10);
@@ -80,7 +97,7 @@ class Game {
   reiniciarJuego() {
     this.reiniciar.addEventListener("click", () => {
       this.reiniciarJuego();
-      });
+    });
     this.crearEscenario();
   }
 }
@@ -88,7 +105,7 @@ class Game {
 class Personaje {
   constructor() {
     this.x = 50;
-    this.y = 150;
+    this.y = 320;
     this.width = 50;
     this.height = 50;
     this.velocidad = 10;
@@ -105,9 +122,54 @@ class Personaje {
       this.x += this.velocidad;
     } else if (evento.key === "ArrowLeft") {
       this.x -= this.velocidad;
-    } else if (evento.key === "ArrowUp" && !this.saltando) {
-        this.saltar();
+      if (this.x <= 0) {
+        this.x = 20;
       }
+    }
+    this.actualizarPosicion();
+  }
+
+  actualizarPosicion() {
+    this.element.style.left = `${this.x}px`;
+    this.element.style.top = `${this.y}px`;
+  }
+
+  colisionaCon(objeto) {
+    return (
+      this.x < objeto.x + objeto.width &&
+      this.x + this.width > objeto.x &&
+      this.y < objeto.y + objeto.height &&
+      this.y + this.height > objeto.y
+    );
+  }
+}
+
+class Golpe {
+  constructor() {
+    this.x = 80;
+    this.y = 290;
+    this.width = 50;
+    this.height = 50;
+    this.velocidad = 10;
+    this.saltando = false;
+
+    this.element = document.createElement("div");
+    this.element.classList.add("golpe");
+
+    this.actualizarPosicion();
+  }
+
+  mover(evento) {
+    if (evento.key === "ArrowRight") {
+      this.x += this.velocidad;
+    } else if (evento.key === "ArrowLeft") {
+      this.x -= this.velocidad;
+      if (this.x <= 0) {
+        this.x = 20;
+      }
+    } else if (evento.key === "ArrowUp" && !this.saltando) {
+      this.saltar();
+    }
     this.actualizarPosicion();
   }
 
@@ -164,7 +226,7 @@ class Moneda {
     this.width = 30;
     this.height = 30;
     this.element = document.createElement("div");
-    this.element.classList.add("moneda"); 
+    this.element.classList.add("moneda");
     this.actualizarPosicion();
   }
 
@@ -172,6 +234,19 @@ class Moneda {
     this.element.style.left = `${this.x}px`;
     this.element.style.top = `${this.y}px`;
   }
+
+  salirPantalla(callback) {
+    let salir = setInterval(() => {
+      this.y -= 10;
+      this.element.style.top = `${this.y}px`;
+
+      if (this.y < -30) {
+        clearInterval(salir);
+        callback();
+      }
+    }, 20);
+  }
+
 }
 
 class Skull {
@@ -181,7 +256,7 @@ class Skull {
     this.width = 30;
     this.height = 30;
     this.element = document.createElement("div");
-    this.element.classList.add("skull"); 
+    this.element.classList.add("skull");
     this.actualizarPosicion();
   }
 
