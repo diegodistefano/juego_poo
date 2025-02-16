@@ -16,7 +16,7 @@ class Game {
     this.enemigos = [];
     this.puntuacion = 0;
     this.vida = 3;
-    this.sonidoPunch = new Audio("../../public/sound/punch-sound.mp3");
+    this.sonidoPunch = new Audio("../../public/sound/punch.mp3");
     this.sonidoCancion = new Audio("../../public/sound/cancion.mp3");
 
     this.crearEscenario();
