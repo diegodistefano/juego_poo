@@ -89,7 +89,7 @@ class Game {
   actualizarPuntuacion(puntos) {
     this.puntuacion += puntos;
     this.puntosElement.textContent = `Puntos: ${this.puntuacion}`;
-    if (this.puntuacion >= 10) {
+    if (this.puntuacion >= 50) {
       this.ganarJuego();
     }
   }

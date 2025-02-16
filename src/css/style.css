@@ -53,6 +53,11 @@ body {
     color: #000000;
   }
 
+  .p {
+    font-size: 70px;
+    color: #000000;
+  }
+
   .boton {
     background-color: #45CB85;
     color: #ffffff;
