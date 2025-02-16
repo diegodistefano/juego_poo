@@ -18,7 +18,7 @@ body {
     height: 400px;
     margin: 20px auto;
     border: 10px solid #45CB85;
-    background: url('/public/img/fondo.webp');
+    background: url('../../public/img/fondo.webp');
     overflow: hidden;
     border-radius: 30px;
   }
