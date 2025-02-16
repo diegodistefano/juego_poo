@@ -13,7 +13,7 @@ body {
   #game-container {
     position: relative;
     width: 80%;
-    height: 50%;
+    height: 400px;
     margin: 20px auto;
     border: 10px solid hsl(63, 89%, 26%);
     background: url('./public/img/fondo.png');
@@ -98,7 +98,7 @@ body {
   @media (min-width: 720px) {
 
     #game-container {
-      width: 800px;
+      width: 1000px;
       height: 400px;
     }
   
