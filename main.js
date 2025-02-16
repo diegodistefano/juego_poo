@@ -2,24 +2,26 @@ class Game {
   constructor() {
     this.container = document.getElementById("game-container");
     this.puntosElement = document.getElementById("puntos");
+    this.vidasElement = document.getElementById("vidas");
     this.reiniciar = document.getElementById("boton-reinicio");
     this.btnIzquierda = document.getElementById("boton-izquierda");
     this.btnArriba = document.getElementById("boton-arriba");
     this.btnDerecha = document.getElementById("boton-derecha");
 
-
     this.personaje = null;
     this.personajeGolpeado = null;
     this.golpe = null;
-    this.monedas = [];
-    this.skulls = [];
+    this.secundarios = [];
+    this.amigos = [];
+    this.enemigos = [];
     this.puntuacion = 0;
+    this.vida = 3;
     this.sonidoPunch = new Audio("./public/sound/punch-sound.mp3");
-    this.sonidoWall = new Audio("./public/sound/ouch.mp3");
+    this.sonidoCancion = new Audio("./public/sound/cancion.mp3");
 
     this.crearEscenario();
     this.agregarEventos();
-    // this.reiniciarJuego();
+    this.reiniciarJuego();
   }
 
   crearEscenario() {
@@ -29,22 +31,21 @@ class Game {
     this.container.appendChild(this.golpe.element);
 
     for (let i = 0; i < 5; i++) {
-      const moneda = new Moneda();
-      this.monedas.push(moneda);
-      this.container.appendChild(moneda.element);
-      const skull = new Skull();
-      this.skulls.push(skull);
-      this.container.appendChild(skull.element);
+      const amigo = new Amigo();
+      this.secundarios.push(amigo);
+      this.container.appendChild(amigo.element);
+      const enemigo = new Enemigo();
+      this.secundarios.push(enemigo);
+      this.container.appendChild(enemigo.element);
     }
+    this.sonidoCancion.play();
   }
 
   agregarEventos() {
     window.addEventListener("keydown", (evento) => {
       if (((evento.key === "ArrowUp") && this.personaje.y === 0)) {
-        // this.personaje.caer(evento);
         this.golpe.caer(evento);
         if (window.addEventListener("keyup", (evento))) {
-          // this.personaje.caer(evento);
           this.golpe.caer(evento);
         }
       }
@@ -57,7 +58,6 @@ class Game {
       this.golpe.mover({ key: "ArrowLeft" });
     })
     this.btnArriba.addEventListener("click", () => {
-      // this.personaje.mover({ key: "ArrowUp" });
       this.golpe.mover({ key: "ArrowUp" });
     })
     this.btnDerecha.addEventListener("click", () => {
@@ -68,23 +68,19 @@ class Game {
 
   checkColisiones() {
     setInterval(() => {
-      this.monedas.forEach((moneda, index) => {
-        if (this.golpe.colisionaCon(moneda)) {
-          //efecto de salir de la pantalla
-          moneda.salirPantalla(() => {
-            this.container.removeChild(moneda.element);
-            this.monedas.splice(index, 1);
-            this.actualizarPuntuacion(10);
+      this.secundarios.forEach((secundario, index) => {
+        if (this.golpe.colisionaCon(secundario)) {
+          secundario.salirPantalla(() => {
+            this.container.removeChild(secundario.element);
+            this.secundarios.splice(index, 1);
+            if (secundario instanceof Enemigo) {    //aca puedo diferenciar objetos de diferentes clases
+              this.actualizarPuntuacion(10);
+            } else {
+              this.actualizarPuntuacion(-10);
+              this.actualizarVida(-1);
+            }
             this.sonidoPunch.play();
           });
-
-        }
-      });
-      this.skulls.forEach((skull, index) => {
-        if (this.golpe.colisionaCon(skull)) {
-          this.container.removeChild(skull.element);
-          this.skulls.splice(index, 1);
-          this.actualizarPuntuacion(-10);
         }
       });
     }, 100);
@@ -93,37 +89,77 @@ class Game {
   actualizarPuntuacion(puntos) {
     this.puntuacion += puntos;
     this.puntosElement.textContent = `Puntos: ${this.puntuacion}`;
+    if (this.puntuacion >= 10) {
+      this.ganarJuego();
+    }
   }
+  actualizarVida(vidas) {
+    this.vida += vidas;
+    this.vidasElement.textContent = `Vidas: ${this.vida}`;
+    if (this.vida <= 0) {
+      this.perderJuego();
+    }
+  }
+
+  ganarJuego() {
+      this.container.innerHTML = "";
+      const ganaste = document.createElement("img");
+      ganaste.classList.add("mensajeGanar");
+      this.container.appendChild(ganaste);
+  }
+
+  perderJuego() {
+    this.container.innerHTML = "";
+      const perdiste = document.createElement("img");
+      perdiste.classList.add("mensajePerder");
+      this.container.appendChild(perdiste);
+}
 
   reiniciarJuego() {
     this.reiniciar.addEventListener("click", () => {
-      this.reiniciarJuego();
+      this.puntuacion = 0;
+      this.vida = 3;
+      this.puntosElement.textContent = `Puntos: ${this.puntuacion}`;
+      this.vidasElement.textContent = `Vidas: ${this.vida}`;
+      this.container.innerHTML = ""; // Para que no se repitan los elementos
+      this.secundarios = [];
+      this.crearEscenario();
     });
-    this.crearEscenario();
   }
 }
 
-class Personaje {
-  constructor() {
-    this.x = 5;
-    this.y = 320;
-    this.width = 50;
-    this.height = 50;
-    this.velocidad = 10;
+class Principal {
+  constructor(x, y, width, height, velocidad) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.velocidad = velocidad;
+  }
 
+  actualizarPosicion() {
+    this.element.style.left = `${this.x}px`;
+    this.element.style.top = `${this.y}px`;
+  }
+}
+
+class Personaje extends Principal {
+  constructor() {
+    super(5, 320, 50, 50, 10);
     this.element = document.createElement("div");
     this.element.classList.add("personaje");
-
     this.actualizarPosicion();
   }
 
+  
   mover(evento) {
     if (evento.key === "ArrowRight") {
       this.x += this.velocidad;
       if (this.x > 930) {
         this.x = 930;
         this.actualizarPosicion();
-    3 }
+        3
+      }
     } else if (evento.key === "ArrowLeft") {
       this.x -= this.velocidad;
       if (this.x < 5) {
@@ -134,22 +170,12 @@ class Personaje {
     this.actualizarPosicion();
   }
 
-  actualizarPosicion() {
-    this.element.style.left = `${this.x}px`;
-    this.element.style.top = `${this.y}px`;
-  }
-
 }
 
-class Golpe {
+class Golpe extends Principal {
   constructor() {
-    this.x = 35;
-    this.y = 290;
-    this.width = 50;
-    this.height = 50;
-    this.velocidad = 10;
+    super(35, 290, 50, 50, 10);
     this.golpeando = false;
-
     this.element = document.createElement("div");
     this.element.classList.add("golpe");
 
@@ -221,28 +247,20 @@ class Golpe {
   }
 }
 
-class Moneda {
-  constructor() {
-    this.x = this.posicionRandomX();
-    this.y = Math.random() * 300 + 30;
-    this.width = 30;
-    this.height = 30;
-    this.element = document.createElement("div");
-    this.element.classList.add("moneda");
-    this.actualizarPosicion();
+class Secundario {
+  constructor(x, y, width, height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
   }
 
-  posicionRandomX() { 
+  static posicionRandomX() {
     if (window.innerWidth > 719) {
-    return Math.random() * 900 + 50;
-  } else {
-    return Math.random() * 200 + 30;
-  }
-  }
-
-  actualizarPosicion() {
-    this.element.style.left = `${this.x}px`;
-    this.element.style.top = `${this.y}px`;
+      return Math.random() * 900 + 50;
+    } else {
+      return Math.random() * 200 + 30;
+    }
   }
 
   salirPantalla(callback) {
@@ -257,31 +275,29 @@ class Moneda {
     }, 20);
   }
 
-}
-
-
-class Skull {
-  constructor() {
-    this.x = this.posicionRandomX();
-    this.y = Math.random() * 250 + 50;
-    this.width = 30;
-    this.height = 30;
-    this.element = document.createElement("div");
-    this.element.classList.add("skull");
-    this.actualizarPosicion();
-  }
-
-  posicionRandomX() { 
-    if (window.innerWidth > 719) {
-    return Math.random() * 900 + 50;
-  } else {
-    return Math.random() * 200 + 30;
-  }
-  }
-
   actualizarPosicion() {
     this.element.style.left = `${this.x}px`;
     this.element.style.top = `${this.y}px`;
+  }
+
+}
+
+class Amigo extends Secundario {
+  constructor() {
+    super(Secundario.posicionRandomX(), Math.random() * 300 + 30, 30, 30);
+    this.element = document.createElement("div");
+    this.element.classList.add("amigo");
+    this.actualizarPosicion();
+  }
+
+}
+
+class Enemigo extends Secundario {
+  constructor() {
+    super(Secundario.posicionRandomX(), Math.random() * 300 + 30, 30, 30);
+    this.element = document.createElement("div");
+    this.element.classList.add("enemigo");
+    this.actualizarPosicion();
   }
 }
 
