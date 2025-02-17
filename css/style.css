@@ -18,7 +18,7 @@ body {
     height: 400px;
     margin: 20px auto;
     border: 10px solid #45CB85;
-    background: url('./img/fondo.png');
+    background: url('./../img/fondo.png');
     overflow: hidden;
     flex-shrink: 0;
     border-radius: 30px;
@@ -72,7 +72,7 @@ body {
   }
 
   .personaje {
-    background: url('../../public/img/luffyPunching.png');
+    background: url('./../img/luffyPunching.png');
     background-size: cover;
     position: absolute;
     width: 80px;
@@ -80,7 +80,7 @@ body {
   }
 
   .golpe {
-    background: url('../../public/img/Punch.png');
+    background: url('./../img/Punch.png');
     background-size:cover;
     position: absolute;
     width: 30px;
@@ -88,7 +88,7 @@ body {
   }
   
   .amigo {
-    background: url('../../public/img/amigo.png');
+    background: url('./../img/amigo.png');
     background-size: cover; 
     position: absolute;
     width: 30px;
@@ -97,7 +97,7 @@ body {
   }
 
   .enemigo {
-    background: url('../../public/img/enemigo.png');
+    background: url('./../img/enemigo.png');
     background-size: cover;
     position: absolute;
     width: 30px;
@@ -108,7 +108,7 @@ body {
     position: absolute;
     top: 25%;
     left: 5%;
-    background: url('../../public/img/ganaste.png');
+    background: url('./../img/ganaste.png');
     background-size: cover;
     width: 90%;
     height: 50%;
@@ -118,7 +118,7 @@ body {
     position: absolute;
     top: 25%;
     left: 5%;
-    background: url('../../public/img/perdiste.png');
+    background: url('./../img/perdiste.png');
     background-size: cover;
     width: 90%;
     height: 60%;
