@@ -76,7 +76,6 @@ class Game {
             if (secundario instanceof Enemigo) {    //aca puedo diferenciar objetos de diferentes clases
               this.actualizarPuntuacion(10);
             } else {
-              this.actualizarPuntuacion(-10);
               this.actualizarVida(-1);
             }
             this.sonidoPunch.play();
