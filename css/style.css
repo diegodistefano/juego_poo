@@ -18,7 +18,7 @@ body {
     height: 400px;
     margin: 20px auto;
     border: 10px solid #45CB85;
-    background: url('../../public/img/fondo.png');
+    background: url('./img/fondo.png');
     overflow: hidden;
     flex-shrink: 0;
     border-radius: 30px;
